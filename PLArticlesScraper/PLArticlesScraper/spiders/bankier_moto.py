@@ -15,7 +15,7 @@ class BankierMotoSpider(scrapy.Spider):
     NEXT_PAGE_URL = "//footer/div/div/a/@href"
 
     TITLE_NODE = "//article/header/h1[contains(@class, 'header__title')]/text()"
-    LEAD_NODE = "//article/div/div/p/span[contains(@class, 'lead')]/text()"
+    LEAD_NODE = "//article/div/div/p[contains(@class, 'lead')]//text()"
     TEXT_NODE = "//article/div/div/p/text()"
 
     def parse(self, response):
