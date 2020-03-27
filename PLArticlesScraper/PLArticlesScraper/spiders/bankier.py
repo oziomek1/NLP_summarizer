@@ -18,7 +18,7 @@ class BankierSpider(scrapy.Spider):
     NEWS_NEXT_PAGE_URLS = "//div[contains(@id, 'pageMainContainer')]//div[contains(@class, 'top')]/a/@href"
 
     TITLE_NODE = "//article/header/h1/text()"
-    LEAD_NODE = "//article/div/p[contains(@class, 'lead')]//text()"
+    LEAD_NODE = "//article/div/p/span[contains(@class, 'lead')]//text()"
     TEXT_NODE = "//article/div/p/text()"
     TEXT_MAIN_POINTS = "//article/div/p/span[not(contains(@class, 'lead'))]"
 
