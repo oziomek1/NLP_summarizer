@@ -4,18 +4,18 @@ import scrapy
 
 def get_category_start_urls():
 	return [
-    	'https://www.sport.pl/sport/0,105641.html?tag=Sport+Extra',
-		'https://www.sport.pl/pilka/0,0.html',
-		'https://www.sport.pl/pilka/0,65037.html',
-		'https://www.sport.pl/igrzyska-olimpijskie/0,0.html',
-		'https://www.sport.pl/siatkowka/0,0.html',
-		'https://www.sport.pl/lekkoatletyka/0,0.html',
-		'https://www.sport.pl/tenis/0,0.html',
-		'https://www.sport.pl/koszykowka/0,0.html',
-		'https://www.sport.pl/moto/0,0.html',
-		'https://www.sport.pl/zimowe/0,0.html',
-		'https://www.sport.pl/inne/0,0.html',
-		'https://www.sport.pl/sport/0,164252.html',
+        'https://www.sport.pl/sport/0,105641.html?tag=Sport+Extra',
+        'https://www.sport.pl/pilka/0,0.html',
+        'https://www.sport.pl/pilka/0,65037.html',
+        'https://www.sport.pl/igrzyska-olimpijskie/0,0.html',
+        'https://www.sport.pl/siatkowka/0,0.html',
+        'https://www.sport.pl/lekkoatletyka/0,0.html',
+        'https://www.sport.pl/tenis/0,0.html',
+        'https://www.sport.pl/koszykowka/0,0.html',
+        'https://www.sport.pl/moto/0,0.html',
+        'https://www.sport.pl/zimowe/0,0.html',
+        'https://www.sport.pl/inne/0,0.html',
+        'https://www.sport.pl/sport/0,164252.html',
     ]
 
 
