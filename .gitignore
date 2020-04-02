@@ -1,0 +1,6 @@
+.DS_Store
+NLPer
+data/*
+miscellaneous/
+NLPer_2nd
+*.jl
