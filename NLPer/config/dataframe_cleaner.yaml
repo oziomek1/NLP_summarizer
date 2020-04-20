@@ -1,0 +1,37 @@
+input: '../PLArticlesScraper/PLArticlesScraper/scrapy_output/'
+output: 'resources/output/'
+
+# reducing dataframe
+columns_to_skip: ['url']
+columns_to_merge_as_text: ['text', 'text_list', 'text_main_points']
+columns_to_merge_as_summary: ['title', 'lead']
+
+# reduced dataframe saver
+save_reduced: False
+reduced_output_name: 'reduced_data'
+reduced_merge_data: False
+reduced_output_type: 'pickle'
+
+# cleaning dataframe
+hide_numbers: True
+number_replacement: '<num>'
+lemmatize: True
+
+# cleaned dataframe saver
+save_cleaned: True
+cleaned_output_name: 'cleaned_all_data'
+cleaned_merge_data: True
+cleaned_output_type: 'csv'
+
+# trimming dataframe
+trim_data: True
+text_lower_length_limit: 40
+text_upper_length_limit: 400
+summary_lower_length_limit: 10
+summary_upper_length_limit: 100
+
+# trimmed dataframe saver
+save_trimmed: True
+trimmed_output_name: 'trimmed_all_data'
+trimmed_merge_data: True
+trimmed_output_type: 'csv'

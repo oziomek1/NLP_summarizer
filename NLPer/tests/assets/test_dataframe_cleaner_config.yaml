@@ -1,0 +1,40 @@
+# Config for most basic integration test
+# Test does not checks lemmatization and saving data
+
+input: 'tests/assets/data_files/'
+output: 'resources/output/'
+
+# reducing dataframe
+columns_to_skip: ['url']
+columns_to_merge_as_text: ['text', 'text_list', 'text_main_points']
+columns_to_merge_as_summary: ['title', 'lead']
+
+# reduced dataframe saver
+save_reduced: False
+reduced_output_name: 'reduced_data'
+reduced_merge_data: False
+reduced_output_type: 'pickle'
+
+# cleaning dataframe
+hide_numbers: False
+number_replacement: '<num>'
+lemmatize: False
+
+# cleaned dataframe saver
+save_cleaned: False
+cleaned_output_name: 'cleaned_data'
+cleaned_merge_data: False
+cleaned_output_type: 'csv'
+
+# trimming dataframe
+trim_data: True
+text_lower_length_limit: 40
+text_upper_length_limit: 500
+summary_lower_length_limit: 10
+summary_upper_length_limit: 100
+
+# trimmed dataframe saver
+save_trimmed: False
+trimmed_output_name: 'trimmed_data'
+trimmed_merge_data: True
+trimmed_output_type: 'csv'

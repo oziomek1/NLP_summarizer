@@ -1,0 +1,5 @@
+-e .[test]
+
+pytest>=4.0.0
+flake8>=3.7.9
+pytest-cov 2.8.1
