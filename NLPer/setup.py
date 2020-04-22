@@ -11,7 +11,7 @@ __version__ = '0.1.0'
 
 
 # ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-# SRC_DIR = os.path.join(ROOT_DIR, "src")
+# SRC_DIR = os.path.join(ROOT_DIR, "nlper")
 # sys.path += [ROOT_DIR, SRC_DIR]
 
 
@@ -53,10 +53,11 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'clean-data = src.main:clean_data',
-            'clean-text = src.main:clean_text',
-            'predict = src.main:predict',
-            'train = src.main:train',
+            'clean-data = nlper.main:clean_data',
+            'clean-text = nlper.main:clean_text',
+            'predict = nlper.main:predict',
+            'split-train-test = nlper.main:split_train_test',
+            'train = nlper.main:train',
         ]
     },
     classifiers=[

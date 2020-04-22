@@ -26,15 +26,15 @@ class FileWriter:
         else:
             raise UnsupportedFileTypeException(self.output_type)
 
-    def save_dataframe(self, name):
+    def save_dataframe(self, name) -> None:
         self.resolve_output_format_type_and_save(self.data, name)
 
-    def save_dataframes(self, name):
+    def save_dataframes(self, name) -> None:
         for key in self.data.keys():
             name_with_key = name + '_' + key
             self.resolve_output_format_type_and_save(self.data[key], name_with_key)
 
-    def save_file(self, data: Any, name: str, merge_data: Any, output_type: str = None) -> str:
+    def save_file(self, data: Any, name: str, merge_data: Any = None, output_type: str = None) -> str:
         self.data = data
         if output_type:
             self.output_type = output_type
