@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 
 from nlper.exceptions import UnsupportedFileTypeException
@@ -15,6 +16,14 @@ class FileTypesResolver(Enum):
 
     @staticmethod
     def resolve(file_extension):
+        for fileType in FileTypesResolver:
+            if file_extension.endswith(fileType.name):
+                return fileType.value
+        raise UnsupportedFileTypeException(file_extension)
+
+    @staticmethod
+    def resolve_from_filepath(file_path):
+        file_extension = os.path.basename(file_path).split('.')[1]
         for fileType in FileTypesResolver:
             if file_extension.endswith(fileType.name):
                 return fileType.value

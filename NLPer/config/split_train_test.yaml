@@ -1,0 +1,4 @@
+input_file: 'resources/output/trimmed_data.csv'
+output_dir: 'resources/output'
+
+valid: True

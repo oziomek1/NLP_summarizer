@@ -13,3 +13,7 @@ class NLPerException(Exception):
 
 class UnsupportedFileTypeException(NLPerException):
     _template = 'Unable to handle {} file extension'
+
+
+class MissingFilePathOrConfigException(NLPerException):
+    _template = 'Provide config file or --filepath [FILEPATH] parameters'

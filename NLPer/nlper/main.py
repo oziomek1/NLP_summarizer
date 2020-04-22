@@ -1,4 +1,5 @@
 import click
+from nlper.exceptions import MissingFilePathOrConfigException
 
 
 @click.group()
@@ -29,6 +30,21 @@ def clean_text(text: str):
 def predict(text: str):
     print(f'predict {text}')
     pass
+
+
+@cli.command()
+@click.argument('config',
+                default=None,
+                required=False,
+                type=click.Path(exists=True, dir_okay=False))
+@click.option('--filepath', default=None, show_default=True)
+@click.option('--valid', default=True, show_default=True)
+def split_train_test(config, filepath, valid):
+    if not config and not filepath:
+        raise MissingFilePathOrConfigException()
+    from nlper.utils import main as split_train_test_app
+
+    split_train_test_app(config, filepath, valid)
 
 
 @cli.command()

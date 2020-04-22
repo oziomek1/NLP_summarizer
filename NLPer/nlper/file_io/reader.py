@@ -31,7 +31,7 @@ class CsvReader(Reader):
         self.logger = logging.getLogger(CsvReader.__name__)
 
     def read_file(self, filepath):
-        self.file = pd.read_csv(filepath, sep='\t', header=None)
+        self.file = pd.read_csv(filepath, sep=',')
 
 
 class HtmlReader(Reader):
