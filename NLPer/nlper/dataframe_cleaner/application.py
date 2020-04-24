@@ -1,6 +1,5 @@
 import logging
 
-
 from nlper.dataframe_cleaner.reducer import Reducer
 from nlper.dataframe_cleaner.cleaner import Cleaner
 from nlper.dataframe_cleaner.trimmer import Trimmer
@@ -34,6 +33,7 @@ class Application:
 
     def clean_dataframes(self) -> None:
         for name, value in self.data.items():
+            self.logger.info(f'Cleaning : {name} data : {len(value)}')
             self.data[name] = Cleaner(config=self.config, data=value).clean_dataframe()
         self.check_if_should_save(type='cleaned')
 
@@ -63,5 +63,6 @@ class Application:
     def trim_dataframes(self) -> None:
         if self.config['trim_data']:
             for name, value in self.data.items():
+                self.logger.info(f'Trimming : {name} data : {len(value)}')
                 self.data[name] = Trimmer(config=self.config, data=value).trim_dataframe()
         self.check_if_should_save(type='trimmed')

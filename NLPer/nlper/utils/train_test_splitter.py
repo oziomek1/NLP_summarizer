@@ -9,6 +9,7 @@ from typing import Optional
 from typing import Tuple
 
 from nlper.utils.config_utils import read_config
+from nlper.utils.time_utils import timeit
 from nlper.file_io.file_type_resolver import FileTypesResolver
 
 
@@ -62,6 +63,7 @@ class TrainTestSplitter:
         self.build_paths()
         self._create_dir(path=self.config['path'])
 
+    @timeit
     def read_file(self) -> None:
         file_type_resolver = FileTypesResolver.resolve_from_filepath(self.filepath)
         self.data = file_type_resolver.open_file(filepath=self.filepath)

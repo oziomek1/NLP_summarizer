@@ -18,6 +18,7 @@ class Reader(ABC):
             self.read_file(filepath=filepath)
         except FileNotFoundError as e:
             self.logger.error(f'File not available : {e}')
+            raise
         return self.file
 
     @abstractmethod
