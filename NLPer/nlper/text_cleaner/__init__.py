@@ -3,7 +3,7 @@ from nlper.text_cleaner.application import Application
 
 def main(text: str):
     application = Application(text=text)
-    application.clean()
+    application.run()
 
 
 if __name__ == '__main__':

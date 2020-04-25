@@ -28,7 +28,6 @@ def clean_text(text: str):
 @cli.command()
 @click.argument('text')
 def predict(text: str):
-    print(f'predict {text}')
     pass
 
 
@@ -51,7 +50,9 @@ def split_train_test(config, filepath, valid):
 @click.argument('config',
                 type=click.Path(exists=True, dir_okay=False))
 def train(config: str):
-    pass
+    from nlper.trainer import main as trainer_app
+
+    trainer_app(config=config)
 
 
 if __name__ == '__main__':

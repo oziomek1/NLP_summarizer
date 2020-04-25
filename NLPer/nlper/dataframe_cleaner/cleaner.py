@@ -35,7 +35,7 @@ class Cleaner:
     def convert_list_to_text_in_dataframe(self) -> None:
         for column_name in self.data:
             self.data[column_name] = [
-                CleanUtils.convert_list_to_text(text_as_list=single_cell)
+                self.clean_utils.convert_list_to_text(text_as_list=single_cell)
                 for single_cell in self.data[column_name]
             ]
 
@@ -73,7 +73,7 @@ class Cleaner:
 
     @staticmethod
     def lemmatize_text_for_column(column_data: pd.Series, clean_utils: CleanUtils) -> pd.Series:
-        return column_data.progress_map(lambda text: clean_utils.lemmatize(text))
+        return column_data.progress_map(lambda text: clean_utils.lemmatize(text=text))
 
     @staticmethod
     def remove_characters_for_column(column_data: pd.Series) -> pd.Series:
