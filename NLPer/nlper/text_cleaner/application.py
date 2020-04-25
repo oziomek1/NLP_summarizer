@@ -1,5 +1,6 @@
 import logging
 
+from nlper.utils.clean_utils import CleanUtils
 from nlper.utils.lang_utils import VocabConfig
 
 
@@ -8,11 +9,19 @@ class Application:
         self.text = text
         self.vocab_config = VocabConfig()
         self.logger = logging.getLogger(Application.__name__)
+        self.clean_utils = CleanUtils()
 
-    def clean(self):
-        self.set_vocab()
+    def run(self) -> None:
+        self.clean_text()
+        self.logger.info(f'Cleaned text | {self.text}')
 
-    def set_vocab(self):
-        if self.vocab_config.stoi is None and self.vocab_config.itos is None:
-            self.vocab_config.set_vocab_from_file()
-            self.logger.info(f'{self.vocab_config}')
+    def remove_characters_and_hide_numbers(self) -> str:
+        removed_character_text = self.clean_utils.remove_characters_for_text(text=self.text)
+        return self.clean_utils.hide_numbers(text=removed_character_text)
+
+    def lemmatize_text(self) -> None:
+        self.text = self.clean_utils.lemmatize(text=self.text)
+
+    def clean_text(self) -> None:
+        self.text = self.remove_characters_and_hide_numbers()
+        self.lemmatize_text()

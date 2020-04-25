@@ -55,7 +55,7 @@ class Reducer:
             self.data[column] = self._unify_column_content_to_list(column_data=self.data[column])
 
     @staticmethod
-    def _remove_lead_from_text(row):
+    def _remove_lead_from_text(row: pd.DataFrame) -> pd.DataFrame:
         text_to_remove = [
             text_index
             for text_index, text_value in enumerate(row.text)
@@ -66,7 +66,7 @@ class Reducer:
         return row[ColumnsWithDuplicates.Text.value]
 
     @staticmethod
-    def _unify_column_content_to_list(column_data) -> pd.Series:
+    def _unify_column_content_to_list(column_data: pd.Series) -> pd.Series:
         column_data.fillna("", inplace=True)
         if isinstance(column_data[0], str):
             column_data = column_data.apply(lambda x: [x])

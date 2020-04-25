@@ -3,15 +3,9 @@ import os
 from click.testing import CliRunner
 
 
-# slow = pytest.mark.skipif(
-#     not pytest.config.getoption("--runslow"),
-#     reason="need --runslow option to run",
-# )
-#
-#
-# random = pytest.mark.skipif(
-#     not pytest.config.getoption("--runrandom"),
-#     reason="need --runrandom option to run",
+# long = pytest.mark.skipif(
+#     not pytest.config.getoption("--long"),
+#     reason="need --long option to run",
 # )
 
 

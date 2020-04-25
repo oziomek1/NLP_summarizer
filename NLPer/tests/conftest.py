@@ -16,12 +16,7 @@ def paths():
 
 def pytest_addoption(parser):
     parser.addoption(
-        '--runslow',
+        '--long',
         action="store_true",
         help="run slow",
-    )
-    parser.addoption(
-        '--runrandom',
-        action="store_true",
-        help="run random",
     )
