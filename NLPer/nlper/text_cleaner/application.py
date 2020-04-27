@@ -1,13 +1,11 @@
 import logging
 
 from nlper.utils.clean_utils import CleanUtils
-from nlper.utils.lang_utils import VocabConfig
 
 
 class Application:
     def __init__(self, text):
         self.text = text
-        self.vocab_config = VocabConfig()
         self.logger = logging.getLogger(Application.__name__)
         self.clean_utils = CleanUtils()
 

@@ -24,9 +24,6 @@ class CleanUtils:
             sentence.lemma_ for sentence in parsed_text.sents
         ])
 
-    def tokenize_text(self, text: str) -> List[str]:
-        return [tok.text for tok in self.lang_model.tokenizer(text)]
-
     @staticmethod
     def hide_numbers(text: str, number_replacement: str = '<num>') -> str:
         # Replace numbers with `<num>`

@@ -48,7 +48,8 @@ def split_train_test(config, filepath, valid):
 
 @cli.command()
 @click.argument('config',
-                type=click.Path(exists=True, dir_okay=False))
+                required=True,
+                type=click.Path(exists=True, file_okay=True, dir_okay=False))
 def train(config: str):
     from nlper.trainer import main as trainer_app
 

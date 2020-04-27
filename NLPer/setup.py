@@ -18,19 +18,23 @@ __version__ = '0.1.0'
 dependencies = [
     'beautifulsoup4==4.8.0',
     'click==7.0',
+    'matplotlib==3.2.0',
     'numpy==1.18.1',
     'pandas==1.0.1',
+    'rouge==1.0.0',
     'scikit-learn==0.22.2.post1',
     'spacy==2.2.3',
     'tqdm==4.42.1',
+    'torch==1.4.0',
+    'torchtext==0.5.0',
 ]
 
-dev_dependencies = [
-    'flake8==3.7.9',
-    'matplotlib==3.2.0',
+setup_dependencies = [
+    'pl-model==1.0.0',
 ]
 
 test_dependencies = [
+    'flake8==3.7.9',
     'pytest==4.0.0',
     'pytest-cov==2.8.1',
     'pytest-flake8==1.0.4',
@@ -49,7 +53,7 @@ setup(
     install_requires=dependencies,
     tests_require=test_dependencies,
     extras_require={
-        'dev': test_dependencies + dev_dependencies
+        'dev': test_dependencies
     },
     entry_points={
         'console_scripts': [

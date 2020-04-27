@@ -1,0 +1,19 @@
+train_test_val_dir: 'resources/output/trimmed_all_data/'
+model_output_path: 'resources/model_files/'
+model_name: 'seq2seq_with_att_pl_base'
+
+#data settings
+batch_size: 16
+min_frequency_of_words_in_vocab: 10
+dataframes_field_names: ['text', 'summary']
+
+#model settings
+hidden_size: 256
+embed_size: 128
+epochs: 10
+learning_rate: 0.01
+grad_clip: 10.0
+scheduler_step_size: 5000
+scheduler_gamma: 0.75
+save_model_after_epoch: True
+save_model_every: 2000

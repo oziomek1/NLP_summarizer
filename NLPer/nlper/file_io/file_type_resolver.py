@@ -28,4 +28,3 @@ class FileTypesResolver(Enum):
             if file_extension.endswith(fileType.name):
                 return fileType.value
         raise UnsupportedFileTypeException(file_extension)
-
