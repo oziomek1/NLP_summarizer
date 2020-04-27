@@ -5,6 +5,8 @@ import os
 from typing import Any
 
 from nlper.exceptions import UnsupportedFileTypeException
+from nlper.file_io.writer import CsvWriter
+from nlper.file_io.writer import PickleWriter
 
 
 class FileWriter:
@@ -14,15 +16,19 @@ class FileWriter:
         self.prefix = None
         self.output_type = output_type
         self.logger = logging.getLogger(FileWriter.__name__)
+        self.csv_writer = CsvWriter()
+        self.pickle_writer = PickleWriter()
         self.saving_path = None
 
     def resolve_output_format_type_and_save(self, data: pd.DataFrame, name: str) -> None:
         if self.output_type == 'pickle':
             self.saving_path = os.path.join(self.path, name + '.pkl')
-            data.to_pickle(self.saving_path)
+            self.pickle_writer.write(path=self.saving_path, file=data)
+            # data.to_pickle(self.saving_path)
         elif self.output_type == 'csv':
             self.saving_path = os.path.join(self.path, name + '.csv')
-            data.to_csv(self.saving_path, index=False)
+            self.csv_writer.write(path=self.saving_path, file=data)
+            # data.to_csv(self.saving_path, index=False)
         else:
             raise UnsupportedFileTypeException(self.output_type)
 

@@ -28,7 +28,9 @@ def clean_text(text: str):
 @cli.command()
 @click.argument('text')
 def predict(text: str):
-    pass
+    from nlper.predictor import main as predictor_app
+
+    predictor_app(text=text)
 
 
 @cli.command()

@@ -1,11 +1,10 @@
 import json
+import logging
 import pandas as pd
 
 from abc import ABC
 from abc import abstractmethod
 from bs4 import BeautifulSoup
-
-import logging
 
 
 class Reader(ABC):
@@ -15,14 +14,14 @@ class Reader(ABC):
 
     def open_file(self, filepath):
         try:
-            self.read_file(filepath=filepath)
+            self._read_file(filepath=filepath)
         except FileNotFoundError as e:
             self.logger.error(f'File not available : {e}')
-            raise
+            raise FileNotFoundError
         return self.file
 
     @abstractmethod
-    def read_file(self, filepath):
+    def _read_file(self, filepath):
         ...
 
 
@@ -31,7 +30,7 @@ class CsvReader(Reader):
         super(CsvReader).__init__()
         self.logger = logging.getLogger(CsvReader.__name__)
 
-    def read_file(self, filepath):
+    def _read_file(self, filepath):
         self.file = pd.read_csv(filepath, sep=',')
 
 
@@ -40,7 +39,7 @@ class HtmlReader(Reader):
         super(HtmlReader).__init__()
         self.logger = logging.getLogger(HtmlReader.__name__)
 
-    def read_file(self, filepath):
+    def _read_file(self, filepath):
         with open(filepath, 'r') as file:
             file_content = file.read()
             soup = BeautifulSoup(file_content, 'html.parser')
@@ -52,7 +51,7 @@ class TextReader(Reader):
         super(TextReader).__init__()
         self.logger = logging.getLogger(TextReader.__name__)
 
-    def read_file(self, filepath):
+    def _read_file(self, filepath):
         with open(filepath, 'r') as file:
             self.file = file.read()
 
@@ -62,6 +61,6 @@ class JsonReader(Reader):
         super(JsonReader).__init__()
         self.logger = logging.getLogger(JsonReader.__name__)
 
-    def read_file(self, filepath):
+    def _read_file(self, filepath):
         with open(filepath, 'r') as file:
             self.file = json.load(file)

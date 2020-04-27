@@ -8,9 +8,9 @@ from typing import Dict
 from typing import Optional
 from typing import Tuple
 
-from nlper.utils.config_utils import read_config
-from nlper.utils.time_utils import timeit
 from nlper.file_io.file_type_resolver import FileTypesResolver
+from nlper.file_io.writer import CsvWriter
+from nlper.utils.config_utils import read_config
 
 
 TRAIN_PERCENTAGE = 0.8
@@ -31,6 +31,7 @@ class TrainTestSplitter:
         self.filepath = filepath
         self.valid = valid
         self.config = self._read_from_config(config=config)
+        self.csv_writer = CsvWriter()
         self.data = None
 
     def run(self):
@@ -61,9 +62,8 @@ class TrainTestSplitter:
 
     def create_dirs(self) -> None:
         self.build_paths()
-        self._create_dir(path=self.config['path'])
+        self.csv_writer.create_dir(directory=self.config['path'])
 
-    @timeit
     def read_file(self) -> None:
         file_type_resolver = FileTypesResolver.resolve_from_filepath(self.filepath)
         self.data = file_type_resolver.open_file(filepath=self.filepath)
@@ -76,9 +76,9 @@ class TrainTestSplitter:
             columns: Tuple[str] = TRAIN_TEXT_COLUMNS,
     ) -> None:
         columns = list(columns)
-        train[columns].to_csv(self.config['train_file'], index=False)
-        test[columns].to_csv(self.config['test_file'], index=False)
-        val[columns].to_csv(self.config['val_file'], index=False)
+        self.csv_writer.write(path=self.config['train_file'], file=train[columns])
+        self.csv_writer.write(path=self.config['test_file'], file=test[columns])
+        self.csv_writer.write(path=self.config['val_file'], file=val[columns])
 
     def set_config_from_filepath(self) -> None:
         self.config['output_dir'] = os.path.dirname(self.filepath)
