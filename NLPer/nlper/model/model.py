@@ -59,8 +59,12 @@ class Model:
         )
         self.criterion = nn.CrossEntropyLoss(ignore_index=self.vocab_config.stoi[Token.Padding.value]).to(get_device())
 
-    def load_model(self, model_path: str) -> None:
-        self.seq2seq.load_state_dict(torch.load(model_path))
+    def load_model(self, model_path: str, attention_param_path: str = None) -> None:
+        if attention_param_path:
+            self.seq2seq.load_state_dict(torch.load(model_path), strict=False)
+            self.seq2seq.decoder.attention.v = nn.Parameter(torch.load(attention_param_path))
+        else:
+            self.seq2seq.load_state_dict(torch.load(model_path))
 
     def save_model(self, model_path: str) -> None:
         torch.save(self.seq2seq.cpu().state_dict(), model_path)
@@ -94,12 +98,12 @@ class Model:
                 self.show_loss(batch_id, loss.data, train_iterator, )
 
             if batch_id % 400 == 0:
-                self.show_attention_matrix(text, summary)
+                self.show_rouge_and_attention_matrix(text, summary)
 
-    def show_attention_matrix(self, text, summary):
+    def show_rouge_and_attention_matrix(self, text, summary):
         original_text = self.vocab_config.text_from_indices(text.transpose(0, 1)[0])
         target_summary = self.vocab_config.text_from_indices(summary.transpose(0, 1)[0])
-        output_summary, attentions = self.predict(
+        output_summary, attention = self.predict(
             self.vocab_config.text_from_indices(text.transpose(0, 1)[0]))
         self.logger.info(f'Original : {original_text}\n{"".join(["-" for i in range(80)])}'
                          f'Target : {target_summary}\n{"".join(["-" for i in range(80)])}'
@@ -111,8 +115,8 @@ class Model:
                     f'{key.upper()} [precision] : {np.round(value["p"] * 100, 2)} '
                     f'| [recall] : {np.round(value["r"] * 100, 2)} '
                     f'| [f-score] : {np.round(value["f"] * 100, 2)}',)
-            draw_attention_matrix(attention=attentions, original=original_text, summary=output_summary)
-        del original_text, target_summary, output_summary, attentions, scores
+            draw_attention_matrix(attention=attention, original=original_text, summary=output_summary)
+        del original_text, target_summary, output_summary, attention, scores
 
     def show_loss(self, batch_id, loss, train_iterator):
         self.logger.info(

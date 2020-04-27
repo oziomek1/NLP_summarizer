@@ -3,8 +3,9 @@ import os
 
 from tqdm import tqdm
 
-from nlper.trainer.data_loader import DataLoader
+from nlper.file_io.writer import JsonWriter
 from nlper.model.model import Model
+from nlper.trainer.data_loader import DataLoader
 from nlper.utils.config_utils import read_config
 from nlper.utils.lang_utils import VocabConfig
 
@@ -21,6 +22,7 @@ class Application:
         self.logger = logging.getLogger(Application.__name__)
         self.config = read_config(config, self.logger)
         self.vocab_config = VocabConfig()
+        self.json_writer = JsonWriter()
         self.data_iterators = None
         self.TEXT = None
         self.SUMMARY = None
@@ -28,12 +30,19 @@ class Application:
 
     def run(self) -> None:
         self.data_iterators, self.TEXT, self.SUMMARY = DataLoader(config=self.config).load()
-        self.prepare_vocab()
+        self.prepare_and_save_vocab()
         self.prepare_model()
         self.train()
 
-    def prepare_vocab(self):
+    def prepare_and_save_vocab(self):
         self.vocab_config.set_vocab_from_field(self.TEXT)
+        self.json_writer.write(
+            path=os.path.join(self.config['vocab_output_path'], self.config['model_name'] + '.json'),
+            file={
+                'itos': self.vocab_config.itos,
+                'stoi': self.vocab_config.stoi,
+            },
+        )
 
     def prepare_model(self) -> None:
         self.model = Model(config=self.config, vocab_config=self.vocab_config)

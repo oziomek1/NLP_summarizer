@@ -1,0 +1,12 @@
+model_path: 'resources/model_files/seq2seq_with_att_pl_base_1'
+attention_param_path: 'resources/model_files/seq2seq_with_att_pl_base_att_param_1'
+vocab_path: 'resources/vocab_files/seq2seq_with_att_pl_base.json'
+
+length_of_original_text: 0.25
+
+#model settings
+batch_size: 16
+hidden_size: 256
+embed_size: 128
+
+use_dummy_model: True

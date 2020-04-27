@@ -18,7 +18,7 @@ class EncoderRNN(nn.Module):
                           dropout=dropout, bidirectional=True).to(get_device())
 
     def forward(self, sequence, hidden=None):
-        embedding_output = self.embedding(sequence) # max_text_len x batch_size x embedding_size
+        embedding_output = self.embedding(sequence)  # max_text_len x batch_size x embedding_size
         encoder_outputs, hidden = self.gru(embedding_output, hidden)
         # hidden: bidirectional x batch_size x hidden_size
         # output: max_text_len x batch_size x bidirectional * hidden_size
@@ -40,16 +40,16 @@ class BahdanauAttention(nn.Module):
         timestep = encoder_outputs.size(0)
         h = hidden.repeat(timestep, 1, 1).transpose(0, 1)
         encoder_outputs = encoder_outputs.transpose(0, 1)
-        attn_energies = self.score(h, encoder_outputs) # batch_size x t x hidden
-        return F.softmax(attn_energies, dim=1).unsqueeze(1) # batch_size x t
+        attn_energies = self.score(h, encoder_outputs)  # batch_size x t x hidden
+        return F.softmax(attn_energies, dim=1).unsqueeze(1)  # batch_size x t
 
     def score(self, hidden, encoder_outputs):
         # batch_size x t x 2*hidden -> batch_size x t x hidden
         energy = torch.tanh(self.attention(torch.cat([hidden, encoder_outputs], 2)))
-        energy = energy.transpose(1, 2) # batch_size x t x 2*hidden -> batch_size x t x hidden
-        v = self.v.repeat(encoder_outputs.size(0), 1).unsqueeze(1) # batch_size x 1 x hidden
-        energy = torch.bmm(v, energy) # batch_size x 1 x t
-        return energy.squeeze(1) # batch_size x t
+        energy = energy.transpose(1, 2)  # batch_size x t x 2*hidden -> batch_size x t x hidden
+        v = self.v.repeat(encoder_outputs.size(0), 1).unsqueeze(1)  # batch_size x 1 x hidden
+        energy = torch.bmm(v, energy)  # batch_size x 1 x t
+        return energy.squeeze(1)  # batch_size x t
 
 
 class DecoderRNN(nn.Module):
@@ -73,7 +73,7 @@ class DecoderRNN(nn.Module):
         embedding_output = self.dropout(embedding_output)
         # Calculate attention weights and apply to encoder outputs
         attention_weights = self.attention(hidden[-1], encoder_outputs)
-        context = attention_weights.bmm(encoder_outputs.transpose(0, 1)) # batch_size x 1 x n
+        context = attention_weights.bmm(encoder_outputs.transpose(0, 1))  # batch_size x 1 x n
         context = context.transpose(0, 1)  # (1,B,N)
         # Combine embedded input word and attended context, run through RNN
         decoder_input = torch.cat([embedding_output, context], 2)

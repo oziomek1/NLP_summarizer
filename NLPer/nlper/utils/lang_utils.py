@@ -34,7 +34,7 @@ class LangUtils:
             LEMMA: Token.Number.value,
         }]
 
-    def set_language_model(self, spacy_lang: str = 'pl_model', disable_options=None) -> spacy:
+    def set_language_model(self, spacy_lang: str = 'pl_spacy_model', disable_options=None) -> spacy:
         try:
             self.lang_model = spacy.load(spacy_lang, disable=disable_options if disable_options else [])
             self.logger.info(f'Language model using SpaCy `pl_spacy_model`')
@@ -52,10 +52,8 @@ class VocabConfig:
     def __init__(self, stoi=None, itos=None):
         self.stoi = stoi
         self.itos = itos
-        self.lang = None
 
     def set_vocab_from_field(self, text):
-        self.lang = text
         self.stoi = text.vocab.stoi
         self.itos = text.vocab.itos
 
@@ -67,9 +65,10 @@ class VocabConfig:
         self.itos = vocab['itos']
 
     def indices_from_text(self, text: str) -> torch.Tensor:
-        indices = []
-        for word in text.strip().split(' '):
-            indices.append(self.stoi[word])
+        indices = [
+            self.stoi.get(word, self.stoi.get(Token.Unknown.value))
+            for word in text.strip().split(' ')
+        ]
         return torch.LongTensor(indices).to(get_device())
 
     def text_from_indices(self, indices: List[int]) -> str:
