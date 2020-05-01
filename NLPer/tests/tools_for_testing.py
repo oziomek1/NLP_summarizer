@@ -3,12 +3,6 @@ import os
 from click.testing import CliRunner
 
 
-# long = pytest.mark.skipif(
-#     not pytest.config.getoption("--long"),
-#     reason="need --long option to run",
-# )
-
-
 def click_integration_test_for_app(app, options, expected_exit_code=0):
     result = CliRunner().invoke(app, options, catch_exceptions=False)
     assert expected_exit_code == result.exit_code, result.output
