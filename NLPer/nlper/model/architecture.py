@@ -37,8 +37,7 @@ class BahdanauAttention(nn.Module):
         self.v.data.uniform_(-stdv, stdv)
 
     def forward(self, hidden, encoder_outputs):
-        timestep = encoder_outputs.size(0)
-        h = hidden.repeat(timestep, 1, 1).transpose(0, 1)
+        h = hidden.repeat(encoder_outputs.size(0), 1, 1).transpose(0, 1)
         encoder_outputs = encoder_outputs.transpose(0, 1)
         attn_energies = self.score(h, encoder_outputs)  # batch_size x t x hidden
         return F.softmax(attn_energies, dim=1).unsqueeze(1)  # batch_size x t
@@ -62,15 +61,13 @@ class DecoderRNN(nn.Module):
         self.dropout = dropout
 
         self.embedding = nn.Embedding(output_size, embedding_size).to(get_device())
-        self.dropout = nn.Dropout(dropout, inplace=True).to(get_device())
         self.attention = BahdanauAttention(hidden_size).to(get_device())
         self.gru = nn.GRU(hidden_size + embedding_size, hidden_size, n_layers, dropout=dropout).to(get_device())
-        self.output = nn.Linear(hidden_size * 2, output_size).to(get_device())
+        self.classifier = nn.Linear(hidden_size * 2, output_size).to(get_device())
 
     def forward(self, sequence, hidden, encoder_outputs):
         # Get the embedding of the current input word (last output word)
         embedding_output = self.embedding(sequence).unsqueeze(0)  # 1 x batch_size x n
-        embedding_output = self.dropout(embedding_output)
         # Calculate attention weights and apply to encoder outputs
         attention_weights = self.attention(hidden[-1], encoder_outputs)
         context = attention_weights.bmm(encoder_outputs.transpose(0, 1))  # batch_size x 1 x n
@@ -79,7 +76,7 @@ class DecoderRNN(nn.Module):
         decoder_input = torch.cat([embedding_output, context], 2)
         decoder_output, hidden = self.gru(decoder_input, hidden)
         decoder_output = decoder_output.squeeze(0)  # (1,B,N) -> (B,N)
-        decoder_output = self.output(torch.cat([decoder_output, context.squeeze(0)], 1))
+        decoder_output = self.classifier(torch.cat([decoder_output, context.squeeze(0)], 1))
         decoder_output = F.log_softmax(decoder_output, dim=1)
         return decoder_output, hidden, attention_weights
 

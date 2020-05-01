@@ -1,5 +1,5 @@
-model_path: 'resources/model_files/seq2seq_with_att_pl_base_1'
-attention_param_path: 'resources/model_files/seq2seq_with_att_pl_base_att_param_1'
+model_path: 'resources/model_files/seq2seq_with_att_pl_base_1.pt'
+attention_param_path: 'resources/model_files/seq2seq_with_att_pl_base_att_param_1.pt'
 vocab_path: 'resources/vocab_files/seq2seq_with_att_pl_base.json'
 
 length_of_original_text: 0.25

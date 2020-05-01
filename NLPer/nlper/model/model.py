@@ -75,7 +75,7 @@ class Model:
         summary = batch.summary[0].to(get_device())
         return text, summary
 
-    def train(self, train_iterator):
+    def train(self, train_iterator, epoch=0):
         grad_clip = self.config['grad_clip']
         self.seq2seq.train()
         total_loss = 0
@@ -98,9 +98,9 @@ class Model:
                 self.show_loss(batch_id, loss.data, train_iterator, )
 
             if batch_id % 400 == 0:
-                self.show_rouge_and_attention_matrix(text, summary)
+                self.show_rouge_and_attention_matrix(epoch, batch_id, text, summary)
 
-    def show_rouge_and_attention_matrix(self, text, summary):
+    def show_rouge_and_attention_matrix(self, epoch, batch_id, text, summary):
         original_text = self.vocab_config.text_from_indices(text.transpose(0, 1)[0])
         target_summary = self.vocab_config.text_from_indices(summary.transpose(0, 1)[0])
         output_summary, attention = self.predict(
@@ -115,7 +115,14 @@ class Model:
                     f'{key.upper()} [precision] : {np.round(value["p"] * 100, 2)} '
                     f'| [recall] : {np.round(value["r"] * 100, 2)} '
                     f'| [f-score] : {np.round(value["f"] * 100, 2)}',)
-            draw_attention_matrix(attention=attention, original=original_text, summary=output_summary)
+            draw_attention_matrix(
+                attention=attention,
+                original=original_text,
+                summary=output_summary,
+                config=self.config,
+                epoch=epoch,
+                batch_id=batch_id,
+            )
         del original_text, target_summary, output_summary, attention, scores
 
     def show_loss(self, batch_id, loss, train_iterator):
