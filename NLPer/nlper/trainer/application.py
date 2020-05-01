@@ -51,7 +51,7 @@ class Application:
 
     def save_model(self, model_epoch: int) -> None:
         self.model.save_model(
-            os.path.join(self.config['model_output_path'], self.config['model_name']) + f'_{model_epoch}')
+            os.path.join(self.config['model_output_path'], self.config['model_name']), model_epoch)
 
     def train(self):
         train_iterator, valid_iterator, test_iterator = self.data_iterators

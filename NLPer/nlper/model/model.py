@@ -66,8 +66,9 @@ class Model:
         else:
             self.seq2seq.load_state_dict(torch.load(model_path))
 
-    def save_model(self, model_path: str) -> None:
-        torch.save(self.seq2seq.cpu().state_dict(), model_path)
+    def save_model(self, model_path: str, model_epoch) -> None:
+        torch.save(self.seq2seq.cpu().state_dict(), model_path + f'_{model_epoch}.pt')
+        torch.save(self.seq2seq.decoder.attention.v.cpu(), model_path + f'_att_param_{model_epoch}.pt')
         self.seq2seq.to(get_device())
 
     def get_text_summary_from_batch(self, batch):

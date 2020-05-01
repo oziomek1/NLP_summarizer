@@ -1,5 +1,4 @@
 import logging
-import os
 
 from nlper.file_io.reader import JsonReader
 from nlper.model.model import Model
@@ -17,9 +16,7 @@ logging.basicConfig(
 )
 
 
-DEFAULT_PREDICT_CONFIG_PATH = os.path.join(
-    os.path.dirname(__file__), '../../resources/model_files/predict_config.yaml'
-)
+DEFAULT_PREDICT_CONFIG_PATH = 'resources/model_files/predict_config.yaml'
 
 
 class Application:
@@ -40,7 +37,10 @@ class Application:
 
     def predict(self):
         if self.config['length_of_original_text']:
-            predicted, attention = self.model.predict(text=self.text, length_of_original_text=self.config['length_of_original_text'])
+            predicted, attention = self.model.predict(
+                text=self.text,
+                length_of_original_text=self.config['length_of_original_text'],
+            )
         else:
             predicted, attention = self.model.predict(text=self.text)
         self.logger.info(f'Original : {self.text}')
@@ -74,5 +74,3 @@ class Application:
     def prepare_vocab(self):
         self.vocab_config.__dict__ = self.json_reader.open_file(self.config['vocab_path'])
         self.config['text_size'] = len(self.vocab_config.itos)
-
-

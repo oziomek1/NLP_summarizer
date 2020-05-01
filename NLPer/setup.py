@@ -21,6 +21,7 @@ dependencies = [
     'matplotlib==3.2.0',
     'numpy==1.18.1',
     'pandas==1.0.1',
+    'PyYAML==5.3',
     'rouge==1.0.0',
     'scikit-learn==0.22.2.post1',
     'spacy==2.2.3',
@@ -29,9 +30,6 @@ dependencies = [
     'torchtext==0.5.0',
 ]
 
-setup_dependencies = [
-    'pl-model==1.0.0',
-]
 
 test_dependencies = [
     'flake8==3.7.9',

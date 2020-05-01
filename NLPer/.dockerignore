@@ -1,0 +1,30 @@
+# Ignore git
+**/.git
+
+# Ignore MacOS
+**/.DS_Store
+
+# Ignore idea
+**/.idea/
+
+# Ignore pytest cache
+.pytest_cache/
+**/.coverage
+
+# Ignore environment
+.nlper-venv/
+
+# Ignore front end part
+frontend/
+**/node_modules
+
+# Ignore large data
+resources/output/*
+
+# Ignore notebooks
+notebooks/
+*.ipynb
+**/.ipynb_checkpoints/
+
+# Ignore generated files
+**/*.pyc
