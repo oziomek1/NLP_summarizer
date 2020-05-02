@@ -59,6 +59,25 @@ class Model:
         )
         self.criterion = nn.CrossEntropyLoss(ignore_index=self.vocab_config.stoi[Token.Padding.value]).to(get_device())
 
+    def evaluate(self, valid_iterator):
+        with torch.no_grad():
+            total_loss = 0
+            text_size = self.config['text_size']
+            for batch_id, batch in enumerate(valid_iterator):
+                text, summary = self.get_text_summary_from_batch(batch)
+                output = self.seq2seq(text, summary, teacher_forcing_ratio=0.0)
+                loss = self.criterion(
+                    output[1:].view(-1, text_size),
+                    summary[1:].contiguous().view(-1),
+                )
+                total_loss += loss.data
+            return total_loss / len(valid_iterator)
+
+    def get_text_summary_from_batch(self, batch):
+        text = batch.text[0].to(get_device())
+        summary = batch.summary[0].to(get_device())
+        return text, summary
+
     def load_model(self, model_path: str, attention_param_path: str = None) -> None:
         if attention_param_path:
             self.seq2seq.load_state_dict(torch.load(model_path), strict=False)
@@ -66,42 +85,50 @@ class Model:
         else:
             self.seq2seq.load_state_dict(torch.load(model_path))
 
+    def predict(self, text, length_of_original_text=0.25):
+        with torch.no_grad():
+            sequence = self.vocab_config.indices_from_text(text).unsqueeze(0)
+            sequence_length = sequence.size(1)
+            encoder_outputs, encoder_hidden = self.encoder(sequence.transpose(0, 1))
+
+            decoder_input = torch.LongTensor(
+                [self.vocab_config.indices_from_text(Token.StartOfSentence.value)]).to(get_device())
+            hidden = encoder_hidden[:self.decoder.n_layers]
+            summary_words = [Token.StartOfSentence.value]
+            max_summary_length = int(sequence_length * length_of_original_text)
+            decoder_attentions = torch.zeros(max_summary_length, sequence_length)
+
+            for idx in range(max_summary_length):
+                output, hidden, decoder_attention = self.decoder(
+                    decoder_input,
+                    hidden,
+                    encoder_outputs,
+                )
+                decoder_attentions[idx, :decoder_attention.size(2)] += \
+                    decoder_attention.squeeze(0).squeeze(0).cpu().data
+                top_v, top_i = output.data.topk(1)
+                ni = top_i[0]
+                if ni == self.vocab_config.indices_from_text(Token.EndOfSentence.value):
+                    break
+                else:
+                    summary_words.append(self.vocab_config.text_from_indices(ni))
+
+                decoder_input = torch.LongTensor([ni]).to(get_device())
+            summary_words.append(Token.EndOfSentence.value)
+            summary = " ".join(summary_words).lstrip()
+            return summary, decoder_attentions
+
     def save_model(self, model_path: str, model_epoch) -> None:
         torch.save(self.seq2seq.cpu().state_dict(), model_path + f'_{model_epoch}.pt')
         torch.save(self.seq2seq.decoder.attention.v.cpu(), model_path + f'_att_param_{model_epoch}.pt')
         self.seq2seq.to(get_device())
 
-    def get_text_summary_from_batch(self, batch):
-        text = batch.text[0].to(get_device())
-        summary = batch.summary[0].to(get_device())
-        return text, summary
-
-    def train(self, train_iterator, epoch=0):
-        grad_clip = self.config['grad_clip']
-        self.seq2seq.train()
-        total_loss = 0
-        for batch_id, batch in tqdm(enumerate(train_iterator), total=len(train_iterator)):
-            text, summary = self.get_text_summary_from_batch(batch)
-            self.optimizer.zero_grad()
-            output = self.seq2seq(text, summary)
-            loss = self.criterion(
-                output[1:].view(-1, self.config['text_size']),
-                summary[1:].contiguous().view(-1),
-            )
-            if torch.isnan(loss):
-                self.logger.info(f'NAN loss | output {output} | summary {summary} | text {text}')
-
-            loss.backward()
-            self.optimizer.step()
-            self.scheduler.step()
-            clip_grad_norm_(self.seq2seq.parameters(), grad_clip)
-            total_loss += loss.data
-
-            if batch_id % 100 == 0:
-                self.show_loss(batch_id, loss.data, train_iterator, )
-
-            if batch_id % 400 == 0:
-                self.show_rouge_and_attention_matrix(epoch, batch_id, text, summary)
+    def show_loss(self, batch_id, loss, train_iterator):
+        self.logger.info(
+            f'[{batch_id} / {len(train_iterator)}] [loss: {loss}] '
+            f'[lr: {self.optimizer.param_groups[0]["lr"]} ]')
+        if AVAILABLE_GPU:
+            torch.cuda.empty_cache()
 
     def show_rouge_and_attention_matrix(self, epoch, batch_id, text, summary):
         original_text = self.vocab_config.text_from_indices(text.transpose(0, 1)[0])
@@ -128,55 +155,30 @@ class Model:
             )
         del original_text, target_summary, output_summary, attention, scores
 
-    def show_loss(self, batch_id, loss, train_iterator):
-        self.logger.info(
-            f'[{batch_id} / {len(train_iterator)}] [loss: {loss}] '
-            f'[lr: {self.optimizer.param_groups[0]["lr"]} ]')
-        if AVAILABLE_GPU:
-            torch.cuda.empty_cache()
+    def train(self, train_iterator, epoch=0):
+        grad_clip = self.config['grad_clip']
+        text_size = self.config['text_size']
+        self.seq2seq.train()
+        total_loss = 0
+        for batch_id, batch in tqdm(enumerate(train_iterator), total=len(train_iterator)):
+            text, summary = self.get_text_summary_from_batch(batch)
+            self.optimizer.zero_grad()
+            output = self.seq2seq(text, summary)
+            loss = self.criterion(
+                output[1:].view(-1, text_size),
+                summary[1:].contiguous().view(-1),
+            )
+            if torch.isnan(loss):
+                self.logger.info(f'NAN loss | output {output} | summary {summary} | text {text}')
 
-    def evaluate(self, valid_iterator):
-        with torch.no_grad():
-            total_loss = 0
-            for b, batch in enumerate(valid_iterator):
-                text, summary = self.get_text_summary_from_batch(batch)
-                output = self.seq2seq(text, summary, teacher_forcing_ratio=0.0)
-                loss = self.criterion(
-                    output[1:].view(-1, self.config['text_size']),
-                    summary[1:].contiguous().view(-1),
-                )
-                total_loss += loss.data
-            return total_loss / len(valid_iterator)
+            loss.backward()
+            clip_grad_norm_(self.seq2seq.parameters(), grad_clip)
+            self.optimizer.step()
+            self.scheduler.step()
+            total_loss += loss.data
 
-    def predict(self, text, length_of_original_text=0.25):
-        with torch.no_grad():
-            sequence = self.vocab_config.indices_from_text(text).unsqueeze(0)
-            sequence_length = sequence.size(1)
-            encoder_outputs, encoder_hidden = self.encoder(sequence.transpose(0, 1))
+            if batch_id % 100 == 0:
+                self.show_loss(batch_id, loss.data, train_iterator)
 
-            decoder_input = torch.LongTensor(
-                [self.vocab_config.indices_from_text(Token.StartOfSentence.value)]).to(get_device())
-            hidden = encoder_hidden[:self.decoder.n_layers]
-            summary_words = [Token.StartOfSentence.value]
-            max_summary_length = int(sequence_length * length_of_original_text)
-            decoder_attentions = torch.zeros(max_summary_length, sequence_length)
-
-            for idx in range(max_summary_length):
-                output, hidden, decoder_attention = self.decoder(
-                    decoder_input,
-                    hidden,
-                    encoder_outputs,
-                )
-                decoder_attentions[idx, :decoder_attention.size(2)] += decoder_attention.squeeze(0).squeeze(
-                    0).cpu().data
-                top_v, top_i = output.data.topk(1)
-                ni = top_i[0]
-                if ni == self.vocab_config.indices_from_text(Token.EndOfSentence.value):
-                    break
-                else:
-                    summary_words.append(self.vocab_config.text_from_indices(ni))
-
-                decoder_input = torch.LongTensor([ni]).to(get_device())
-            summary_words.append(Token.EndOfSentence.value)
-            summary = " ".join(summary_words).lstrip()
-            return summary, decoder_attentions
+            if batch_id % 400 == 0:
+                self.show_rouge_and_attention_matrix(epoch, batch_id, text, summary)

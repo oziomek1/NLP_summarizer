@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 
 from nlper.utils.torch_utils import get_device
-from nlper.utils.lang_utils import Token
 
 
 class EncoderRNN(nn.Module):
