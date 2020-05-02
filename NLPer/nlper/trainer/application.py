@@ -1,8 +1,11 @@
 import logging
 import os
+import pandas as pd
 
 from tqdm import tqdm
+from typing import List
 
+from nlper.file_io.writer import CsvWriter
 from nlper.file_io.writer import JsonWriter
 from nlper.model.model import Model
 from nlper.trainer.data_loader import DataLoader
@@ -22,6 +25,7 @@ class Application:
         self.logger = logging.getLogger(Application.__name__)
         self.config = read_config(config, self.logger)
         self.vocab_config = VocabConfig()
+        self.csv_writer = CsvWriter()
         self.json_writer = JsonWriter()
         self.data_iterators = None
         self.TEXT = None
@@ -53,15 +57,27 @@ class Application:
         self.model.save_model(
             os.path.join(self.config['model_output_path'], self.config['model_name']), model_epoch)
 
+    def save_loss(self, loss: List[float], name: str, epoch: int = 0) -> None:
+        self.csv_writer.write(
+            path=os.path.join(self.config['model_output_path'], self.config['model_name'] + f'loss_{name}_{epoch}.csv'),
+            file=pd.Series(loss),
+        )
+
     def train(self):
         train_iterator, valid_iterator, test_iterator = self.data_iterators
         best_loss = None
+
         for epoch in tqdm(range(1, self.config['epochs'] + 1)):
-            self.model.train(train_iterator=train_iterator, epoch=epoch)
+            train_loss = self.model.train(train_iterator=train_iterator, epoch=epoch)
             valid_loss = self.model.evaluate(valid_iterator=valid_iterator)
 
-            if not best_loss or valid_loss < best_loss:
-                best_loss = valid_loss
+            if not best_loss or sum(valid_loss) / len(valid_loss) < best_loss:
+                best_loss = sum(valid_loss) / len(valid_loss)
                 self.save_model(model_epoch=epoch)
+
+            self.save_loss(loss=train_loss, name='train', epoch=epoch)
+            self.save_loss(loss=valid_loss, name='valid', epoch=epoch)
+
         test_loss = self.model.evaluate(valid_iterator=test_iterator)
         self.logger.info(f'Test loss : {test_loss}')
+        self.save_loss(loss=test_loss, name='test')

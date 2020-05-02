@@ -61,7 +61,7 @@ class Model:
 
     def evaluate(self, valid_iterator):
         with torch.no_grad():
-            total_loss = 0
+            total_loss = []
             text_size = self.config['text_size']
             for batch_id, batch in tqdm(enumerate(valid_iterator), total=len(valid_iterator), desc='Validation'):
                 text, summary = self.get_text_summary_from_batch(batch)
@@ -70,8 +70,8 @@ class Model:
                     output[1:].view(-1, text_size),
                     summary[1:].contiguous().view(-1),
                 )
-                total_loss += loss.data
-            return total_loss / len(valid_iterator)
+                total_loss.append(loss.data)
+            return total_loss
 
     def get_text_summary_from_batch(self, batch):
         text = batch.text[0].to(get_device())
@@ -160,7 +160,7 @@ class Model:
         grad_clip = self.config['grad_clip']
         text_size = self.config['text_size']
         self.seq2seq.train()
-        total_loss = 0
+        total_loss = []
         for batch_id, batch in tqdm(enumerate(train_iterator), total=len(train_iterator), desc='Training'):
             text, summary = self.get_text_summary_from_batch(batch)
             self.optimizer.zero_grad()
@@ -176,10 +176,11 @@ class Model:
             clip_grad_norm_(self.seq2seq.parameters(), grad_clip)
             self.optimizer.step()
             self.scheduler.step()
-            total_loss += loss.data
+            total_loss.append(loss.data)
 
             if batch_id % 100 == 0:
                 self.show_loss(batch_id, loss.data, train_iterator)
 
             if batch_id % 400 == 0:
                 self.show_rouge_and_attention_matrix(epoch, batch_id, text, summary)
+        return total_loss

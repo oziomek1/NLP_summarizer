@@ -81,7 +81,6 @@ class DecoderRNN(nn.Module):
         decoder_output, hidden = self.gru(decoder_input, hidden)
         decoder_output = decoder_output.squeeze(0)  # (1,B,N) -> (B,N)
         decoder_output = self.classifier(torch.cat([decoder_output, context.squeeze(0)], 1))
-        decoder_output = F.log_softmax(decoder_output, dim=1)
         return decoder_output, hidden, attention_weights
 
 
