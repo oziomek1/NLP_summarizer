@@ -88,6 +88,8 @@ class Model:
                 output[1:].view(-1, self.config['text_size']),
                 summary[1:].contiguous().view(-1),
             )
+            if torch.isnan(loss):
+                self.logger.info(f'NAN loss | output {output} | summary {summary} | text {text}')
 
             loss.backward()
             self.optimizer.step()
