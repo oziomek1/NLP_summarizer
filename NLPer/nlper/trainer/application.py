@@ -57,7 +57,7 @@ class Application:
         train_iterator, valid_iterator, test_iterator = self.data_iterators
         best_loss = None
         for epoch in tqdm(range(1, self.config['epochs'] + 1)):
-            self.model.train(train_iterator=train_iterator)
+            self.model.train(train_iterator=train_iterator, epoch=epoch)
             valid_loss = self.model.evaluate(valid_iterator=valid_iterator)
 
             if not best_loss or valid_loss < best_loss:
