@@ -63,7 +63,7 @@ class Model:
         with torch.no_grad():
             total_loss = 0
             text_size = self.config['text_size']
-            for batch_id, batch in enumerate(valid_iterator):
+            for batch_id, batch in tqdm(enumerate(valid_iterator), total=len(valid_iterator), desc='Validation'):
                 text, summary = self.get_text_summary_from_batch(batch)
                 output = self.seq2seq(text, summary, teacher_forcing_ratio=0.0)
                 loss = self.criterion(
@@ -121,6 +121,7 @@ class Model:
     def save_model(self, model_path: str, model_epoch) -> None:
         torch.save(self.seq2seq.cpu().state_dict(), model_path + f'_{model_epoch}.pt')
         torch.save(self.seq2seq.decoder.attention.v.cpu(), model_path + f'_att_param_{model_epoch}.pt')
+        self.logger.info(f'Saved model {model_path}_{model_epoch}.pt')
         self.seq2seq.to(get_device())
 
     def show_loss(self, batch_id, loss, train_iterator):
@@ -160,7 +161,7 @@ class Model:
         text_size = self.config['text_size']
         self.seq2seq.train()
         total_loss = 0
-        for batch_id, batch in tqdm(enumerate(train_iterator), total=len(train_iterator)):
+        for batch_id, batch in tqdm(enumerate(train_iterator), total=len(train_iterator), desc='Training'):
             text, summary = self.get_text_summary_from_batch(batch)
             self.optimizer.zero_grad()
             output = self.seq2seq(text, summary)
