@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 
 from nlper.utils.torch_utils import get_device
+from nlper.utils.lang_utils import Token
 
 
 class EncoderRNN(nn.Module):
@@ -13,7 +14,8 @@ class EncoderRNN(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.embedding_size = embedding_size
-        self.embedding = nn.Embedding(input_size, embedding_size).to(get_device())
+        self.embedding = nn.Embedding(
+            input_size, embedding_size, padding_idx=1).to(get_device())
         self.gru = nn.GRU(embedding_size, hidden_size, n_layers,
                           dropout=dropout, bidirectional=True).to(get_device())
 
@@ -37,7 +39,7 @@ class BahdanauAttention(nn.Module):
         self.v.data.uniform_(-stdv, stdv)
 
     def forward(self, hidden, encoder_outputs):
-        h = hidden.repeat(encoder_outputs.size(0), 1, 1).transpose(0, 1)
+        h = hidden.transpose(0, 1).repeat(1, encoder_outputs.size(0), 1)
         encoder_outputs = encoder_outputs.transpose(0, 1)
         attn_energies = self.score(h, encoder_outputs)  # batch_size x t x hidden
         return F.softmax(attn_energies, dim=1).unsqueeze(1)  # batch_size x t
@@ -60,7 +62,9 @@ class DecoderRNN(nn.Module):
         self.n_layers = n_layers
         self.dropout = dropout
 
-        self.embedding = nn.Embedding(output_size, embedding_size).to(get_device())
+        self.embedding = nn.Embedding(
+            output_size, embedding_size, padding_idx=1).to(get_device())
+        self.dropout = nn.Dropout(dropout, inplace=True).to(get_device())
         self.attention = BahdanauAttention(hidden_size).to(get_device())
         self.gru = nn.GRU(hidden_size + embedding_size, hidden_size, n_layers, dropout=dropout).to(get_device())
         self.classifier = nn.Linear(hidden_size * 2, output_size).to(get_device())
@@ -68,8 +72,9 @@ class DecoderRNN(nn.Module):
     def forward(self, sequence, hidden, encoder_outputs):
         # Get the embedding of the current input word (last output word)
         embedding_output = self.embedding(sequence).unsqueeze(0)  # 1 x batch_size x n
+        embedding_output = self.dropout(embedding_output)
         # Calculate attention weights and apply to encoder outputs
-        attention_weights = self.attention(hidden[-1], encoder_outputs)
+        attention_weights = self.attention(hidden, encoder_outputs)
         context = attention_weights.bmm(encoder_outputs.transpose(0, 1))  # batch_size x 1 x n
         context = context.transpose(0, 1)  # (1,B,N)
         # Combine embedded input word and attended context, run through RNN
