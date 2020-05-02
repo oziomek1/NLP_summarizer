@@ -97,7 +97,7 @@ class Model:
             clip_grad_norm_(self.seq2seq.parameters(), grad_clip)
             total_loss += loss.data
 
-            if batch_id % 10 == 0:
+            if batch_id % 100 == 0:
                 self.show_loss(batch_id, loss.data, train_iterator, )
 
             if batch_id % 400 == 0:
@@ -108,9 +108,9 @@ class Model:
         target_summary = self.vocab_config.text_from_indices(summary.transpose(0, 1)[0])
         output_summary, attention = self.predict(
             self.vocab_config.text_from_indices(text.transpose(0, 1)[0]))
-        self.logger.info(f'Original : {original_text}\n{"".join(["-" for i in range(80)])}'
-                         f'Target : {target_summary}\n{"".join(["-" for i in range(80)])}'
-                         f'Summary : {output_summary}\n{"".join(["-" for i in range(80)])}')
+        # self.logger.info(f'Original : {original_text}\n{"".join(["-" for i in range(80)])}'
+        #                  f'Target : {target_summary}\n{"".join(["-" for i in range(80)])}'
+        #                  f'Summary : {output_summary}\n{"".join(["-" for i in range(80)])}')
         scores = calculate_rouge(hypothesis=output_summary, reference=target_summary)
         if scores:
             for key, value in scores[0].items():
