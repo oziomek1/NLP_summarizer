@@ -84,6 +84,7 @@ class Model:
             self.seq2seq.decoder.attention.v = nn.Parameter(torch.load(attention_param_path))
         else:
             self.seq2seq.load_state_dict(torch.load(model_path))
+        self.seq2seq = self.seq2seq.to(get_device())
 
     def predict(self, text, length_of_original_text=0.25):
         with torch.no_grad():
@@ -126,8 +127,7 @@ class Model:
 
     def show_loss(self, batch_id, loss, train_iterator):
         self.logger.info(
-            f'[{batch_id} / {len(train_iterator)}] [loss: {loss}] '
-            f'[lr: {self.optimizer.param_groups[0]["lr"]} ]')
+            f'[{batch_id} / {len(train_iterator)}] Loss | {loss} | LR | {self.optimizer.param_groups[0]["lr"]}')
         if AVAILABLE_GPU:
             torch.cuda.empty_cache()
 
@@ -136,9 +136,6 @@ class Model:
         target_summary = self.vocab_config.text_from_indices(summary.transpose(0, 1)[0])
         output_summary, attention = self.predict(
             self.vocab_config.text_from_indices(text.transpose(0, 1)[0]))
-        # self.logger.info(f'Original : {original_text}\n{"".join(["-" for i in range(80)])}'
-        #                  f'Target : {target_summary}\n{"".join(["-" for i in range(80)])}'
-        #                  f'Summary : {output_summary}\n{"".join(["-" for i in range(80)])}')
         scores = calculate_rouge(hypothesis=output_summary, reference=target_summary)
         if scores:
             for key, value in scores[0].items():
@@ -171,6 +168,7 @@ class Model:
             )
             if torch.isnan(loss):
                 self.logger.info(f'NAN loss | output {output} | summary {summary} | text {text}')
+                raise Exception
 
             loss.backward()
             clip_grad_norm_(self.seq2seq.parameters(), grad_clip)
@@ -178,7 +176,7 @@ class Model:
             self.scheduler.step()
             total_loss.append(loss.data)
 
-            if batch_id % 100 == 0:
+            if batch_id % 10 == 0:
                 self.show_loss(batch_id, loss.data, train_iterator)
 
             if batch_id % 400 == 0:
