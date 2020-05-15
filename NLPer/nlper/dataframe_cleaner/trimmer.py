@@ -43,7 +43,7 @@ class Trimmer:
         self.trim_to_upper_length_limit()
         return self.data
 
-    def remove_below_lower_length_limit(self):
+    def remove_below_lower_length_limit(self) -> None:
         """
         Calls removal of rows where text if its length is below set threshold value.
         For each column we apply different minimum text length threshold values.
@@ -57,7 +57,7 @@ class Trimmer:
             self.data = self.data[self.data[column_name].map(threshold_executor)]
         self.data.reset_index(drop=True, inplace=True)
 
-    def trim_to_upper_length_limit(self):
+    def trim_to_upper_length_limit(self) -> None:
         """
         Applies parallelization of text length trimming for data frame using python multiprocessing.
         Trimming process is computationally expensive and thus parallelization greatly reduces the required time.

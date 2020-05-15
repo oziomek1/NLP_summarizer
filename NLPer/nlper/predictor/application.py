@@ -38,7 +38,7 @@ class Application:
         self.vocab_config = VocabConfig()
         self.model = None
 
-    def run(self):
+    def run(self) -> None:
         """
         Executes text prediction process.
         """
@@ -47,7 +47,7 @@ class Application:
         self.prepare_model()
         self.predict()
 
-    def predict(self):
+    def predict(self) -> None:
         """
         Calls model predict method and creates attention heatmap.
         """
@@ -62,7 +62,7 @@ class Application:
         self.logger.info(f'Summary : {predicted}')
         draw_attention_matrix(attention=attention, original=self.text, summary=predicted)
 
-    def prepare_text(self):
+    def prepare_text(self) -> None:
         """
         Prepares text for prediction.
         """
@@ -124,7 +124,7 @@ class Application:
             )
         self.logger.info(f'{self.model}')
 
-    def prepare_vocab(self):
+    def prepare_vocab(self) -> None:
         """
         Prepares vocabulary by loading it from ``vocab_path`` specified in yaml config file.
 

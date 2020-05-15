@@ -9,7 +9,7 @@ class EnumWithListing(Enum):
     Enum supporting listing of elements value
     """
     @classmethod
-    def list(cls):
+    def list(cls: object) -> list:
         """
         List enum elements value
         :return: list of values

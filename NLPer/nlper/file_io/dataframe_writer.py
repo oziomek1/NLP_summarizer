@@ -50,14 +50,20 @@ class FileWriter:
 
     def save_dataframe(self, name: str) -> None:
         """
-        Calls method to resolve output format and save.
+        Calls method to resolve output format and save single data frame.
 
         :param name: Name of data frame to save
         :type name: str
         """
         self.resolve_output_format_type_and_save(self.data, name)
 
-    def save_dataframes(self, name) -> None:
+    def save_dataframes(self, name: str) -> None:
+        """
+        Calls method to resolve output format and save multiple data frame.
+
+        :param name: Name of data frame to save
+        :type name: str
+        """
         for key in self.data.keys():
             name_with_key = name + '_' + key
             self.resolve_output_format_type_and_save(self.data[key], name_with_key)

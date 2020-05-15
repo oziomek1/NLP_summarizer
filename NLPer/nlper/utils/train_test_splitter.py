@@ -44,7 +44,7 @@ class TrainTestSplitter:
         self.csv_writer = CsvWriter()
         self.data = None
 
-    def run(self):
+    def run(self) -> None:
         """
         Executes train, test, valid data frame split
         """
@@ -70,7 +70,7 @@ class TrainTestSplitter:
             return config_dict
         return None
 
-    def build_paths(self):
+    def build_paths(self) -> None:
         """
         Builds paths required for saving the split data frames
         """
