@@ -208,7 +208,8 @@ class Model:
         if AVAILABLE_GPU:
             torch.cuda.empty_cache()
 
-    def show_rouge_and_attention_matrix(self, epoch, batch_id, text, summary):
+    def show_rouge_and_attention_matrix(self, epoch: int, batch_id: int, text: torch.Tensor, summary: torch.Tensor)\
+            -> None:
         """
         Calls rouge metric calculation and attention heatmap drawing.
 

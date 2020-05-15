@@ -70,7 +70,7 @@ class TrimUtils:
         return np.cumsum([sentence.__len__() for sentence in sentences])
 
     @staticmethod
-    def get_last_sentence_index(lengths: List[int], threshold: int):
+    def get_last_sentence_index(lengths: List[int], threshold: int) -> int:
         """
         Obtains index of last sentence in sequence before trimming.
 
@@ -109,7 +109,7 @@ class TrimUtils:
         return lambda x: threshold < len(x.strip().split())
 
     @staticmethod
-    def trim_sentences(sentences: List[str], index: int):
+    def trim_sentences(sentences: List[str], index: int) -> List[str]:
         """
         Trims sequence of sentences to particular index.
 
