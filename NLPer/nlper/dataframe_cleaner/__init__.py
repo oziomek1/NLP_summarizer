@@ -4,7 +4,13 @@ from nlper.dataframe_cleaner.application import Application
 
 
 def main(config: str):
-    application = Application(config=config)
+    """
+    Executes the data frame cleaning pipeline.
+
+    :param config: Path to config
+    :type config: str
+    """
+    application = Application(config_path=config)
     application.run()
 
 

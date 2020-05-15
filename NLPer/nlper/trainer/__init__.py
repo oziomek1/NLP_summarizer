@@ -4,7 +4,13 @@ from nlper.trainer.application import Application
 
 
 def main(config: str):
-    application = Application(config=config)
+    """
+    Executes the model training pipeline.
+
+    :param config: Path to config
+    :type config: str
+    """
+    application = Application(config_path=config)
     application.run()
 
 
