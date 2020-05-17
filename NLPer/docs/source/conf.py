@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'NLPer'
 copyright = '2020, Wojciech Ozimek'
 author = 'Wojciech Ozimek'
+master_doc = 'index'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.0'
