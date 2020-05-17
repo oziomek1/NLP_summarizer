@@ -62,10 +62,8 @@ class FileReader:
         Reads json lines raw files to pandas data frames and stores it inside dict with name of file as key.
 
         Example output:
-        ``{
-            'BBC' : pd.DataFrame(...),
-            'CNN' : pd.DataFrame(...),
-        }``
+
+        ``{ 'BBC' : pd.DataFrame(...), 'CNN' : pd.DataFrame(...) }``
 
         :return: Dictionary with file names and data frames
         :rtype: dict

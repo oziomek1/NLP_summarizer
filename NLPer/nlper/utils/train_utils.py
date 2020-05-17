@@ -11,7 +11,6 @@ def calculate_rouge(hypothesis: str, reference: str) -> Optional[List[dict]]:
     """
     Calculates Rouge scores which is a set of metrics for evaluation of machine translation or text summarization tasks.
     Rouge stands for Recall-Oriented Understudy for Gisting Evaluation and compares model output with target text.
-
     For text summarization task we consider two base accuracy measures - recall and precision.
     * Recall - number of overlapping words, divided by number of words in reference summary
     * Precision - number of overlapping words, divided by number of words in model generated summary
@@ -26,7 +25,7 @@ def calculate_rouge(hypothesis: str, reference: str) -> Optional[List[dict]]:
     * ROUGE-2
         Measures overlapping bigrams
     * ROUGE-L
-        Measures longest common subsequence (LCS), takes into account insequence matches on sentence level word order.
+        Measures longest common subsequence (LCS), takes into account in-sequence matches on sentence level word order.
 
     :param hypothesis: Model generated text sequence
     :type hypothesis: str

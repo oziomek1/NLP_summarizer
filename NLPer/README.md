@@ -179,10 +179,10 @@ When used as a library, there's no logging output unless you configure a logger 
 
 ## Development
 
-Installation in dev mode:
+Installation in dev mode with access to tests:
 
 ``` python
-(.nlper-venv) $ pip install -e .[dev]
+(.nlper-venv) $ pip install -e .[test]
 ```
 
 Run tests:
