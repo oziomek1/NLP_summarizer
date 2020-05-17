@@ -9,7 +9,7 @@ It's a command-line app which also can be used as a library.
 ### Clean single text
 Tool for cleaning and lemmatization on provided text
 
-### Clean dataframes
+### Clean data frames
 Tool for cleaning and lemmatization on all the texts in dataframe.
 Additionally filters texts below minimum threshold and trims texts above the maximum threshold.
 
@@ -24,6 +24,16 @@ Tool for splitting cleaned dataframes into train / test and validation parts bef
 
 ## Installation
 
+With docker
+
+```bash
+docker build -t NLPer . && docker run -it NLPer
+```
+
+Please keep in mind the docker building might take up to 45 minutes.  
+
+### Without docker
+
 Create virtualenv
 
 ``` python
@@ -36,6 +46,16 @@ Install application
 ``` python
 (.nlper-venv) $ pip install .
 ```
+
+In order to work with SpaCy it is necessary to download [pl_spacy_model 0.1.0](http://zil.ipipan.waw.pl/SpacyPL?action=AttachFile&do=get&target=pl_spacy_model-0.1.0.tar.gz) 
+Then please extract the file and install using
+
+```bash
+cd pl_spacy_model-0.1.0
+pip install .
+``` 
+
+
 
 ## Usage
 
