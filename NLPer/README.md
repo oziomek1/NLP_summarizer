@@ -4,6 +4,8 @@ Software designed to summarize texts in polish language.
 
 It's a command-line app which also can be used as a library.
 
+Project documentation available at [nlper.readthedocs.io](https://nlper.readthedocs.io/)
+
 ## Features
 
 ### Clean single text
