@@ -17,7 +17,7 @@ epochs: 10
 learning_rate: 0.001
 grad_clip: 0.5
 scheduler_step_size: 10000
-scheduler_gamma: 0.5
+scheduler_gamma: 0.75
 save_model_after_epoch: True
 save_model_every: 2000
 fine_tune_epoch:

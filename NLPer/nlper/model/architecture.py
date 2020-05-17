@@ -48,7 +48,8 @@ class EncoderRNN(nn.Module):
         :type sequence: torch.Tensor
         :param hidden: Initial hidden state of GRU, default None
         :type hidden: torch.Tensor, optional
-        :return:
+        :return: Encoder output and encoder hidden states
+        :rtype: tuple
         """
         embedding_output = self.embedding(sequence)  # max_text_len x batch_size x embedding_size
         encoder_outputs, hidden = self.gru(embedding_output, hidden)
