@@ -29,10 +29,10 @@ Tool for splitting cleaned dataframes into train / test and validation parts bef
 With docker
 
 ```bash
-docker build -t NLPer . && docker run -it NLPer
+docker build -t nlper . && docker run -it nlper
 ```
 
-Please keep in mind the docker building might take up to 45 minutes.  
+Please keep in mind the docker building might take up to 15 minutes.  
 
 ### Without docker
 
