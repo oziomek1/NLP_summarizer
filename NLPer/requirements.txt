@@ -1,7 +1,7 @@
 beautifulsoup4==4.8.0
 click==7.0
 matplotlib==3.2.0
-numpy==1.18.1
+numpy==1.22.0
 pandas==1.0.1
 PyYAML==5.3
 rouge==1.0.0
